@@ -128,6 +128,9 @@ class _YourMusicPlayer extends State<ActivityPage1>{
               width: 350,
               height: 350,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.accessibility, size: 200, color: Colors.blueGrey);
+              },
             ),
             
             const SizedBox(height: 40),
