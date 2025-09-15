@@ -13,7 +13,7 @@ class _YourMusicPlayer extends State<ActivityPage1>{
   final AudioPlayer _audioPlayer = AudioPlayer();
   int _currentIndex = 0;
   bool _isPlaying = false;
-  bool _playPause = true;
+  bool _playPause = false;
 
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
@@ -31,21 +31,31 @@ class _YourMusicPlayer extends State<ActivityPage1>{
     "assets/music/SugarOnMyTongue.mp3"
   ];
 
+  List<String> cover = [
+    "assets/cover/1.jpg",
+    "assets/cover/2.jpg",
+    "assets/cover/3.jpg",
+    "assets/cover/4.jpg",
+    "assets/cover/5.jpg",
+    "assets/cover/6.jpg",
+    "assets/cover/7.jpg",
+    "assets/cover/8.jpg",
+    "assets/cover/9.jpg",
+    "assets/cover/10.jpg",
+  ];
+
   Future<void> _playSong(int index) async {
     await _audioPlayer.stop();
     await _audioPlayer.play(AssetSource(songs[index].replaceFirst("assets/", "")));
     setState(() {
       _currentIndex = index;
       _isPlaying = true;
+      _playPause = false;
     });
   }
 
   Future<void> _togglePlayPause() async {
-    if (_isPlaying){
-      await _audioPlayer.pause();
-    } else {
-      await _audioPlayer.resume();
-    }
+    _isPlaying ? await _audioPlayer.pause() : await _audioPlayer.resume();
     setState(() {
       _isPlaying = !_isPlaying;
       _playPause = !_playPause;
@@ -78,19 +88,19 @@ class _YourMusicPlayer extends State<ActivityPage1>{
   void initState() {
     super.initState();
 
-    // Listen for total song duration
     _audioPlayer.onDurationChanged.listen((d) {
       setState(() {
         _duration = d;
       });
     });
 
-    // Listen for current playing position
     _audioPlayer.onPositionChanged.listen((p) {
       setState(() {
         _position = p;
       });
     });
+
+    _audioPlayer.setSource(AssetSource(songs[_currentIndex].replaceFirst("assets/", "")));
   }
 
 
@@ -101,7 +111,7 @@ class _YourMusicPlayer extends State<ActivityPage1>{
     super.dispose();
   }
 
-//bale ito yung elements ng music player mo
+//bale ito yung front end elements ng music player
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,8 +122,23 @@ class _YourMusicPlayer extends State<ActivityPage1>{
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.accessibility, size: 200, color: Colors.blueGrey),
+
+            Image.asset(
+              cover[_currentIndex % cover.length],
+              width: 200,
+              height: 200,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.accessibility, size: 200, color: Colors.blueGrey);
+              },
+            ),
+            
             const SizedBox(height: 40),
+
+            Text(
+              songs[_currentIndex].split("/").last.replaceAll(".mp3", ""), 
+              style: const TextStyle(fontSize: 25),
+            ),
 
             SizedBox(
               width: 300,
@@ -127,7 +152,7 @@ class _YourMusicPlayer extends State<ActivityPage1>{
                   Slider(
                     min: 0,
                     max: _duration.inMilliseconds.toDouble(),
-                    value: _position.inMilliseconds.clamp(0, _duration.inMilliseconds).toDouble(), 
+                    value: _position.inMilliseconds.clamp(0, _duration.inMilliseconds).toDouble(), //para smooth milliseconds
                     onChanged: (value) async{
                       final newPosition = Duration(milliseconds: value.toInt());
                       await _audioPlayer.seek(newPosition);
@@ -158,7 +183,7 @@ class _YourMusicPlayer extends State<ActivityPage1>{
                       ),
                     ),
                   ),
-                ), //navigation push daw sabi ni sir, HOW??!?
+                ), //navigation push daw
 
                 IconButton(
                   icon: const Icon(Icons.skip_previous), 
@@ -204,6 +229,8 @@ class SongListPage extends StatelessWidget{
         itemCount: songs.length,
         itemBuilder: (context, index){
           String songName = songs[index].split("/").last;
+          int songNumber = index + 1;
+          songName = "$songNumber. " + songName.replaceAll(".mp3", "");
           return ListTile(
             title: Text(songName),
             onTap: () => onSongSelected(index),
