@@ -28,7 +28,9 @@ class _YourMusicPlayer extends State<ActivityPage1>{
     "assets/music/BeatIt.mp3",
     "assets/music/SlowDown.mp3",
     "assets/music/Starboy.mp3",
-    "assets/music/SugarOnMyTongue.mp3"
+    "assets/music/SugarOnMyTongue.mp3",
+    "assets/music/AllIWannaDo.mp3"
+
   ];
 
   List<String> cover = [
