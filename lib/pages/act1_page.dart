@@ -43,7 +43,7 @@ class _YourMusicPlayer extends State<ActivityPage1>{
     "assets/cover/7.jpg",
     "assets/cover/8.jpg",
     "assets/cover/9.jpg",
-    "assets/cover/10.jpg",
+    "assets/cover/minji.jpg",
     "assets/cover/11.jpg",
   ];
 
