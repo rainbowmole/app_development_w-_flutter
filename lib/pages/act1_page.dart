@@ -13,15 +13,17 @@ class ActivityPage1 extends StatefulWidget {
 
 class _YourMusicPlayer extends State<ActivityPage1>{
   final AudioPlayer _audioPlayer = AudioPlayer();
-  int _currentIndex = 0;
-  bool _isPlaying = false;
-  bool _playPause = false;
-  bool _isShuffle = false;
+  int _currentIndex = 0; //to navigate the songs in the list
+  double _volume = 1.0; //setting volume, needed for volume adjuster later on
+  bool _showVolume = false; //to hide the volume setting
+  bool _isPlaying = false; //listener if the song is playing
+  bool _playPause = false; //toggle for play pause
+  bool _isShuffle = false; //toggle for shuffle play
 
-  Duration _duration = Duration.zero;
-  Duration _position = Duration.zero;
+  Duration _duration = Duration.zero; //the whole duration of the song
+  Duration _position = Duration.zero; //the current time position of the song being played
 
-  List<String> songs = [
+  List<String> songs = [ //song list
     "assets/music/AEAO.mp3",
     "assets/music/HER.mp3",
     "assets/music/Swim.mp3",
@@ -33,10 +35,9 @@ class _YourMusicPlayer extends State<ActivityPage1>{
     "assets/music/Starboy.mp3",
     "assets/music/SugarOnMyTongue.mp3",
     "assets/music/AllIWannaDo.mp3"
-
   ];
 
-  List<String> cover = [
+  List<String> cover = [ //song cover
     "assets/cover/1.jpg",
     "assets/cover/2.jpg",
     "assets/cover/3.jpg",
@@ -50,7 +51,8 @@ class _YourMusicPlayer extends State<ActivityPage1>{
     "assets/cover/11.jpg",
   ];
 
-  Future<void> _playSong(int index) async {
+  //function to play the song
+  Future<void> _playSong(int index) async { 
     await _audioPlayer.stop();
     await _audioPlayer.play(AssetSource(songs[index].replaceFirst("assets/", "")));
     setState(() {
@@ -59,35 +61,35 @@ class _YourMusicPlayer extends State<ActivityPage1>{
       _playPause = false;
     });
   }
-
+  //Toggle Play Pause 
   Future<void> _togglePlayPause() async {
     _isPlaying ? await _audioPlayer.pause() : await _audioPlayer.resume();
     setState(() {
       _isPlaying = !_isPlaying;
-      _playPause = !_playPause;
+      _playPause = !_playPause; //this will just change the play or pause button
     });
   }
-
+  //Function for Next Song Button
   void _nextSong(){
-    if (_isShuffle) { 
-      _shuffleSong();
-    }else{
-      int i = (_currentIndex + 1) % songs.length;
-      _playSong(i);
+    if (_isShuffle) { //now this will ask the button kung naka shuffle ba or nah
+      _shuffleSong(); //if yes instead of pressing shuffle again automatic ng naka shuffle pag nag next
+    }else{            
+      int i = (_currentIndex + 1) % songs.length; //pag di nakashuffle edi plus one nalang sa index
+      _playSong(i); //tawagin yung function to play the song
     }
   }
-  
+  //since may next song edi may pang relapse este previous song tayo
   void _prevSong(){
-    int i = (_currentIndex - 1 + songs.length) % songs.length;
-    _playSong(i);
+    int i = (_currentIndex - 1 + songs.length) % songs.length; //minus one lang, _currentIndex - 1 will do
+    _playSong(i);                                              //pero just to be sure nilagyan ko nalang ng songs.length
   }
-
-  void _shuffleSong(){
-    int i;
-    do {
-      i = Random().nextInt(songs.length);
-    } while (i == _currentIndex && songs.length > 1);
-    _playSong(i);
+  //well this is shuffle song, originally you have to press it manually para shuffle
+  void _shuffleSong(){ //Now this is what I did para automatic na
+    int i;             
+    do {               //Using do while loop, I set 
+      i = Random().nextInt(songs.length); //this will pick a random number from the song list 
+    } while (i == _currentIndex && songs.length > 1); //Since we're using random, this will sure na the number will not repeat.
+    _playSong(i);     //If hindi nagrepeat yung song sa shuffle, it will play na yeyyy
   }
 
   String _formatTime(Duration d){
@@ -97,20 +99,28 @@ class _YourMusicPlayer extends State<ActivityPage1>{
     return "$minutes:$seconds";
   }
 
+  //Keyboard Listener 
   bool _controlKey(KeyEvent event) {
     if (event is KeyDownEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.space){
-        _togglePlayPause();
+      if (event.logicalKey == LogicalKeyboardKey.space){ //Space button Listener
+        _togglePlayPause();                              //It will toggle play pause
         return true;
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight){
-        _nextSong();
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight){ //Arrow Right Button Lister
+        _nextSong();                                                 //It will trigger next song function
         return true;
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft){
-        _prevSong();
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft){ //Arrow Left Button Lister
+        _prevSong();                                                //It will trigerr previous song function
         return true;
       }
     }
     return false;
+  }
+
+  void _changeVolume(double value) {
+    setState(() {
+      _volume = value;
+    });
+    _audioPlayer.setVolume(_volume);
   }
 
   late FocusNode _focusNode;
@@ -153,7 +163,7 @@ class _YourMusicPlayer extends State<ActivityPage1>{
     _audioPlayer.setSource(AssetSource(songs[_currentIndex].replaceFirst("assets/", "")));
   }
 
-
+  //Disposing passive functions like keyboard listener or the audio.
   @override
   void dispose(){
     HardwareKeyboard.instance.removeHandler(_controlKey);
@@ -169,12 +179,12 @@ class _YourMusicPlayer extends State<ActivityPage1>{
   @override
   Widget build(BuildContext context) {
 
-    var screenWidth = MediaQuery.of(context).size.width;
-    var screenHeigt = MediaQuery.of(context).size.height;
+    var screenWidth = MediaQuery.of(context).size.width;  //just to make it responsive with the width of the screen
+    var screenHeigt = MediaQuery.of(context).size.height; //the same but in height 
 
-    double coverSize = (screenWidth < screenHeigt ? 0.6 * screenWidth : 0.4 * screenHeigt);
+    double coverSize = (screenWidth < screenHeigt ? 0.6 * screenWidth : 0.4 * screenHeigt); //responsive cover size
 
-    return Focus(
+    return Focus( 
       focusNode: _focusNode,
       child: Scaffold(
         appBar: AppBar(
@@ -269,15 +279,51 @@ class _YourMusicPlayer extends State<ActivityPage1>{
                       IconButton(
                         icon: Icon(
                           _isShuffle ? Icons.shuffle_on_outlined : Icons.shuffle,
-                          color: _isShuffle ? Colors.blueGrey : Colors.blueGrey
-                        ), 
+                          color: _isShuffle ? Colors.blueGrey : Colors.blueGrey), 
                         iconSize: 25,
                         onPressed: (){
                           setState(() {
                             _isShuffle = !_isShuffle;
                           });
                         },
-                      ) 
+                      ), 
+
+                      IconButton(
+                        icon: Icon(_showVolume ? Icons.volume_up_outlined : Icons.volume_up,
+                        color: _isShuffle ? Colors.blueGrey : Colors.blueGrey),
+                        onPressed: (){
+                          setState(() {
+                            _showVolume = !_showVolume;
+                          });
+                        },
+                      ),
+                      
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        width: _showVolume ? 180 : 0, // Collapse width when hidden
+                        curve: Curves.easeInOut,
+                        child: AnimatedCrossFade(
+                          duration: const Duration(milliseconds: 300),
+                          crossFadeState: _showVolume
+                              ? CrossFadeState.showFirst
+                              : CrossFadeState.showSecond,
+                          firstChild: Row(
+                            children: [
+                              Expanded(
+                                child: Slider(
+                                  min: 0.0,
+                                  max: 1.0,
+                                  value: _volume,
+                                  onChanged: _changeVolume,
+                                  activeColor: Colors.blueGrey,
+                                  inactiveColor: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                          secondChild: const SizedBox.shrink(),
+                        ),
+                      ),
                     ],
                   )
                 ],
