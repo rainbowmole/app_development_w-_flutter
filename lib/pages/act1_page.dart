@@ -24,17 +24,17 @@ class _YourMusicPlayer extends State<ActivityPage1>{
   Duration _position = Duration.zero; //the current time position of the song being played
 
   List<String> songs = [ //song list
-    "assets/music/AEAO.mp3",
-    "assets/music/HER.mp3",
-    "assets/music/Swim.mp3",
-    "assets/music/WallToWall.mp3",
-    "assets/music/Often.mp3",
-    "assets/music/Paradise.mp3",
-    "assets/music/BeatIt.mp3",
-    "assets/music/SlowDown.mp3",
-    "assets/music/Starboy.mp3",
-    "assets/music/SugarOnMyTongue.mp3",
-    "assets/music/AllIWannaDo.mp3"
+    "assets/music/AEAO - DJ Premier and Dynamic Duo.mp3",
+    "assets/music/HER - Chase Atlantic.mp3",
+    "assets/music/Swim - Chase Atlantic.mp3",
+    "assets/music/Wall To Wall - Chris Brown.mp3",
+    "assets/music/Often - The Weeknd.mp3",
+    "assets/music/Paradise - Chase Atlantic.mp3",
+    "assets/music/Beat It - Sean Kingston & Chris Brown.mp3",
+    "assets/music/Slow Down - Chase Atlantic.mp3",
+    "assets/music/Starboy - The Weeknd.mp3",
+    "assets/music/Sugar On My Tongue - Tyler, The Creator.mp3",
+    "assets/music/All I Wanna Do - Jay Park.mp3"
   ];
 
   List<String> cover = [ //song cover
