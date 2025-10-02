@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'dart:math';
-
 import 'package:flutter/services.dart';
+import 'ui_ctrl.dart';
+import 'song_list.dart';
+import 'main_ctrl.dart';
+
+
 
 class ActivityPage1 extends StatefulWidget {
   const ActivityPage1({super.key});
@@ -13,17 +16,15 @@ class ActivityPage1 extends StatefulWidget {
 
 class _YourMusicPlayer extends State<ActivityPage1>{
   final AudioPlayer _audioPlayer = AudioPlayer();
-  int _currentIndex = 0; //to navigate the songs in the list
-  double _volume = 1.0; //setting volume, needed for volume adjuster later on
-  bool _showVolume = false; //to hide the volume setting
-  bool _isPlaying = false; //listener if the song is playing
-  bool _playPause = false; //toggle for play pause
-  bool _isShuffle = false; //toggle for shuffle play
+  int _currentIndex = 0; 
+  double _volume = 1.0;  
+  bool _isPlaying = false; 
+  bool _isShuffle = false; 
 
-  Duration _duration = Duration.zero; //the whole duration of the song
-  Duration _position = Duration.zero; //the current time position of the song being played
+  Duration _duration = Duration.zero; 
+  Duration _position = Duration.zero; 
 
-  List<String> songs = [ //song list
+  List<String> songs = [ 
     "assets/music/AEAO - DJ Premier and Dynamic Duo.mp3",
     "assets/music/HER - Chase Atlantic.mp3",
     "assets/music/Swim - Chase Atlantic.mp3",
@@ -34,100 +35,37 @@ class _YourMusicPlayer extends State<ActivityPage1>{
     "assets/music/Slow Down - Chase Atlantic.mp3",
     "assets/music/Starboy - The Weeknd.mp3",
     "assets/music/Sugar On My Tongue - Tyler, The Creator.mp3",
-    "assets/music/All I Wanna Do - Jay Park.mp3"
+    "assets/music/All I Wanna Do - Jay Park.mp3",
+    "assets/music/THAT'S MY BABY - PLAYERTWO.mp3"
   ];
 
-  List<String> cover = [ //song cover
-    "assets/cover/1.jpg",
-    "assets/cover/2.jpg",
-    "assets/cover/3.jpg",
-    "assets/cover/4.jpg",
-    "assets/cover/5.jpg",
-    "assets/cover/6.jpg",
-    "assets/cover/7.jpg",
-    "assets/cover/8.jpg",
-    "assets/cover/9.jpg",
-    "assets/cover/minji.jpg",
-    "assets/cover/11.jpg",
+  List<String> cover = [ 
+    "assets/cover/AEAO.jpg",
+    "assets/cover/HER.jpg",
+    "assets/cover/SWIM.jpg",
+    "assets/cover/Wall to Wall.jpg",
+    "assets/cover/Often.jpg",
+    "assets/cover/Paradise.jpg",
+    "assets/cover/Beat it.jpg",
+    "assets/cover/Paradise.jpg",
+    "assets/cover/Starboy.jpg",
+    "assets/cover/SOMT.jpg",
+    "assets/cover/AIWD.jpg",
+    "assets/cover/TMB.jpg"
   ];
-
-  //function to play the song
-  Future<void> _playSong(int index) async { 
-    await _audioPlayer.stop();
-    await _audioPlayer.play(AssetSource(songs[index].replaceFirst("assets/", "")));
-    setState(() {
-      _currentIndex = index;
-      _isPlaying = true;
-      _playPause = false;
-    });
-  }
-  //Toggle Play Pause 
-  Future<void> _togglePlayPause() async {
-    _isPlaying ? await _audioPlayer.pause() : await _audioPlayer.resume();
-    setState(() {
-      _isPlaying = !_isPlaying;
-      _playPause = !_playPause; //this will just change the play or pause button
-    });
-  }
-  //Function for Next Song Button
-  void _nextSong(){
-    if (_isShuffle) { //now this will ask the button kung naka shuffle ba or nah
-      _shuffleSong(); //if yes instead of pressing shuffle again automatic ng naka shuffle pag nag next
-    }else{            
-      int i = (_currentIndex + 1) % songs.length; //pag di nakashuffle edi plus one nalang sa index
-      _playSong(i); //tawagin yung function to play the song
-    }
-  }
-  //since may next song edi may pang relapse este previous song tayo
-  void _prevSong(){
-    int i = (_currentIndex - 1 + songs.length) % songs.length; //minus one lang, _currentIndex - 1 will do
-    _playSong(i);                                              //pero just to be sure nilagyan ko nalang ng songs.length
-  }
-  //well this is shuffle song, originally you have to press it manually para shuffle
-  void _shuffleSong(){ //Now this is what I did para automatic na
-    int i;             
-    do {               //Using do while loop, I set 
-      i = Random().nextInt(songs.length); //this will pick a random number from the song list 
-    } while (i == _currentIndex && songs.length > 1); //Since we're using random, this will sure na the number will not repeat.
-    _playSong(i);     //If hindi nagrepeat yung song sa shuffle, it will play na yeyyy
-  }
-
-  String _formatTime(Duration d){
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(d.inMinutes.remainder(60));
-    final seconds = twoDigits(d.inSeconds.remainder(60));
-    return "$minutes:$seconds";
-  }
-
-  //Keyboard Listener 
-  bool _controlKey(KeyEvent event) {
-    if (event is KeyDownEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.space){ //Space button Listener
-        _togglePlayPause();                              //It will toggle play pause
-        return true;
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight){ //Arrow Right Button Lister
-        _nextSong();                                                 //It will trigger next song function
-        return true;
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft){ //Arrow Left Button Lister
-        _prevSong();                                                //It will trigerr previous song function
-        return true;
-      }
-    }
-    return false;
-  }
-
-  void _changeVolume(double value) {
-    setState(() {
-      _volume = value;
-    });
-    _audioPlayer.setVolume(_volume);
-  }
 
   late FocusNode _focusNode;
+  late PlayerController controller;
 
   @override
   void initState() {
     super.initState();
+    controller = PlayerController(
+      audioPlayer: _audioPlayer, 
+      songs: songs, 
+      currentIndex: _currentIndex, 
+      isShuffle: _isShuffle, 
+      initialVolume: _volume);
 
     _focusNode = FocusNode();
     _focusNode.requestFocus();
@@ -153,14 +91,43 @@ class _YourMusicPlayer extends State<ActivityPage1>{
     _audioPlayer.onPlayerComplete.listen((event) {
       if (mounted) {
         if (_isShuffle) {
-          _shuffleSong();
+          controller.shuffleSong();
         } else {
-          _nextSong();
+          controller.nextSong();
         }
       }
     });
 
     _audioPlayer.setSource(AssetSource(songs[_currentIndex].replaceFirst("assets/", "")));
+  }
+
+  //Keyboard Listener 
+  bool _controlKey(KeyEvent event) {
+    if (event is KeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.space){ 
+        controller.togglePlayPause();                              
+        return true;
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight){ 
+        controller.nextSong();                                                 
+        return true;
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft){ 
+        controller.prevSong();                                                
+        return true;
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp){
+        setState(() {
+          _volume = (_volume + 0.1).clamp(0.0, 1.0);
+        });
+        _audioPlayer.setVolume(_volume);
+        return true;
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown){
+        setState(() {
+          _volume = (_volume - 0.1).clamp(0.0, 1.0);
+        });
+        _audioPlayer.setVolume(_volume);
+        return true;
+      }
+    }
+    return false;
   }
 
   //Disposing passive functions like keyboard listener or the audio.
@@ -179,10 +146,30 @@ class _YourMusicPlayer extends State<ActivityPage1>{
   @override
   Widget build(BuildContext context) {
 
-    var screenWidth = MediaQuery.of(context).size.width;  //just to make it responsive with the width of the screen
-    var screenHeigt = MediaQuery.of(context).size.height; //the same but in height 
+    //pang himay sa song title and artist
+    String songfile = songs[controller.currentIndex].split("/").last.replaceAll(".mp3", "");
+    List<String> parts = songfile.split(" - "); //[0 = song title, 1 = artist]
+    String songTitle = parts[0];
+    String artistName = parts.length > 1 ? parts[1] : "Unknown Artist";
 
-    double coverSize = (screenWidth < screenHeigt ? 0.6 * screenWidth : 0.4 * screenHeigt); //responsive cover size
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;   
+
+    bool isWideScreen = screenWidth > 969;
+    bool isAnchored = isWideScreen;
+
+    double coverSize = (screenWidth > 1000 ? screenHeight * 0.60 : 
+                       (screenWidth > 940 ? screenHeight * 0.55 : 
+                       (screenWidth > 830 ? screenHeight * 0.50 :
+                       (screenWidth > 700 ? screenHeight * 0.45  : 
+                       screenHeight * 0.40  ))));
+    
+    double listHeight = screenHeight > 960 ? 655 : 
+                        screenHeight > 940 ? screenHeight * 0.50 :
+                        screenHeight > 900 ? screenHeight * 0.65 : 
+                        screenHeight * 0.01;
+    listHeight = listHeight.clamp(250, 675);
+    double sliderWidth = isWideScreen ? screenWidth * 0.35  : 300;
 
     return Focus( 
       focusNode: _focusNode,
@@ -190,174 +177,135 @@ class _YourMusicPlayer extends State<ActivityPage1>{
         appBar: AppBar(
           title: const Text("Music Player")
         ),
-        body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              child:  Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-
-                  Image.asset(
-                    cover[_currentIndex % cover.length],
-                    width: coverSize,
-                    height: coverSize,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.accessibility, size: 200, color: Colors.blueGrey);
-                    },
-                  ),
-                  
-                  const SizedBox(height: 40),
-
-                  Text(
-                    songs[_currentIndex].split("/").last.replaceAll(".mp3", ""), 
-                    style: const TextStyle(fontSize: 25),
-                  ),
-
-                  SizedBox(
-                    width: 300,
-                    child: Row(
-                      children: [
-
-                        SizedBox(width: 20),
-
-                        Text(_formatTime(_position)),
-                        
-                        Expanded(
-                          child: Slider(
-                            min: 0,
-                            max: _duration.inMilliseconds.toDouble(),
-                            value: _position.inMilliseconds.clamp(0, _duration.inMilliseconds).toDouble(), //para smooth milliseconds
-                            onChanged: (value) async{
-                              final newPosition = Duration(milliseconds: value.toInt());
-                              await _audioPlayer.seek(newPosition);
-                            },
+        body: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 635),
+          child: LayoutBuilder(
+            builder: (context, constraints) { 
+              return SafeArea(
+                child:  isAnchored ? 
+                Column(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(width: 10),
+                          SongListWidget(
+                            songs: songs, 
+                            cover: cover, 
+                            listHeight: listHeight, 
+                            currentIndex: controller.currentIndex, 
+                            onSongSelected: controller.playSong),
+                          Expanded(
+                            child: Center(
+                              child: Image.asset(
+                                cover[controller.currentIndex % cover.length],
+                                width: coverSize,
+                                height: coverSize,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.accessibility, size: 200, color: Colors.blueGrey);
+                                },
+                              ),
+                            ),
                           ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 33),
+
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 10, 32, 70),
+                        borderRadius: BorderRadius.circular(16)
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      margin: const EdgeInsets.all(10.0),
+                      constraints: const BoxConstraints(maxWidth: 1900, maxHeight: 150),
+                      child: MusicPlayerUIControls(
+                        isWideScreen: isWideScreen, 
+                        isShuffle: _isShuffle, 
+                        toggleShuff: (value) {
+                            setState(() {
+                              _isShuffle = value;
+                            });
+                        },
+                        isPlaying: controller.isPlaying, 
+                        songTitle: songTitle, 
+                        artistName: artistName, 
+                        sliderWidth: sliderWidth, 
+                        volume: _volume, 
+                        position: _position, 
+                        duration: _duration, 
+                        currentIndex: controller.currentIndex, 
+                        songs: songs, 
+                        cover: cover, 
+                        audioPlayer: _audioPlayer, 
+                        playSong: controller.playSong, 
+                        prevSong: controller.prevSong, 
+                        nextSong: controller.nextSong, 
+                        togglePlayPause: controller.togglePlayPause, 
+                        shuffleSong: controller.shuffleSong,
+                        changeVolume: controller.changeVolume),
+                    ),
+                    
+                    const SizedBox(height: 10),
+                  ],
+                )
+                : SingleChildScrollView(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 100),
+                        Image.asset(
+                          cover[controller.currentIndex % cover.length],
+                          width: coverSize,
+                          height: coverSize,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.accessibility, size: 200, color: Colors.blueGrey);
+                          },
                         ),
-                        Text(_formatTime(_duration)),
+                        const SizedBox(height: 40),
+                        MusicPlayerUIControls(
+                          isWideScreen: isWideScreen, 
+                          isShuffle: _isShuffle, 
+                          toggleShuff: (value) {
+                            setState(() {
+                              _isShuffle = value;
+                            });
+                          },
+                          isPlaying: controller.isPlaying, 
+                          songTitle: songTitle, 
+                          artistName: artistName, 
+                          sliderWidth: sliderWidth, 
+                          volume: _volume, 
+                          position: _position, 
+                          duration: _duration, 
+                          currentIndex: controller.currentIndex, 
+                          songs: songs, 
+                          cover: cover, 
+                          audioPlayer: _audioPlayer, 
+                          playSong: controller.playSong, 
+                          prevSong: controller.prevSong, 
+                          nextSong: controller.nextSong, 
+                          togglePlayPause: controller.togglePlayPause, 
+                          shuffleSong: controller.shuffleSong,
+                          changeVolume: controller.changeVolume
+                        ),
+                        const SizedBox(height: 10)
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 10),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.library_music), 
-                        iconSize: 25, 
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => SongListPage(
-                              songs: songs, 
-                              onSongSelected: (index) 
-                              {Navigator.pop(context); 
-                              _playSong(index);
-                              },
-                            ),
-                          ),
-                        ),
-                      ), //navigation push daw
-
-                      IconButton(
-                        icon: const Icon(Icons.skip_previous), 
-                        iconSize: 35,
-                        onPressed: _prevSong,),
-
-                      IconButton(
-                        icon: Icon(
-                          _playPause ? Icons.play_circle : Icons.pause_circle), 
-                        iconSize: 55,
-                        onPressed: _togglePlayPause,),
-
-                      IconButton(
-                        icon: const Icon(Icons.skip_next), 
-                        iconSize: 35,
-                        onPressed: _nextSong,),
-
-                      IconButton(
-                        icon: Icon(
-                          _isShuffle ? Icons.shuffle_on_outlined : Icons.shuffle,
-                          color: _isShuffle ? Colors.blueGrey : Colors.blueGrey), 
-                        iconSize: 25,
-                        onPressed: (){
-                          setState(() {
-                            _isShuffle = !_isShuffle;
-                          });
-                        },
-                      ), 
-
-                      IconButton(
-                        icon: Icon(_showVolume ? Icons.volume_up_outlined : Icons.volume_up,
-                        color: _isShuffle ? Colors.blueGrey : Colors.blueGrey),
-                        onPressed: (){
-                          setState(() {
-                            _showVolume = !_showVolume;
-                          });
-                        },
-                      ),
-                      
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        width: _showVolume ? 180 : 0, // Collapse width when hidden
-                        curve: Curves.easeInOut,
-                        child: AnimatedCrossFade(
-                          duration: const Duration(milliseconds: 300),
-                          crossFadeState: _showVolume
-                              ? CrossFadeState.showFirst
-                              : CrossFadeState.showSecond,
-                          firstChild: Row(
-                            children: [
-                              Expanded(
-                                child: Slider(
-                                  min: 0.0,
-                                  max: 1.0,
-                                  value: _volume,
-                                  onChanged: _changeVolume,
-                                  activeColor: Colors.blueGrey,
-                                  inactiveColor: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                          secondChild: const SizedBox.shrink(),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
         ),
-      ),
-    );
-  }
-}
-
-//listahan mo ng kanta boy
-class SongListPage extends StatelessWidget{
-  final List<String> songs;
-  final Function(int) onSongSelected;
-
-  const SongListPage({super.key, required this.songs, required this.onSongSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Song list')),
-      body: ListView.builder(
-        itemCount: songs.length,
-        itemBuilder: (context, index){
-          String songName = songs[index].split("/").last;
-          int songNumber = index + 1;
-          songName = "$songNumber. " + songName.replaceAll(".mp3", "");
-          return ListTile(
-            title: Text(songName),
-            onTap: () => onSongSelected(index),
-          );
-        }
       ),
     );
   }
