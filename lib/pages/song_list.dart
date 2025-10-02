@@ -40,51 +40,62 @@ class _SongListWidgetState extends State<SongListWidget> {
             ),
           ),
           const Divider(color: Colors.white24),
-          SizedBox(
-            height: widget.listHeight,
-              child:Scrollbar(
-                thumbVisibility: true,
-                child: ListView.builder(
-                itemCount: widget.songs.length, 
-                itemBuilder: (context, index){
-                  String songfile = widget.songs[index].split("/").last.replaceAll(".mp3", "");
-                  List<String> parts = songfile.split(" - ");
-                  String songTitle = parts[0];
-                  String artistName = parts.length > 1 ? parts[1] : "Unknown Artist";
+          Flexible(
+            child: SizedBox(
+              height: widget.listHeight,
+                child:Scrollbar(
+                  thumbVisibility: true,
+                  child: ListView.builder(
+                  itemCount: widget.songs.length, 
+                  itemBuilder: (context, index){
+                    String songfile = widget.songs[index].split("/").last.replaceAll(".mp3", "");
+                    List<String> parts = songfile.split(" - ");
+                    String songTitle = parts[0];
+                    String artistName = parts.length > 1 ? parts[1] : "Unknown Artist";
 
-                  bool isOn = index == widget.currentIndex;
+                    bool isOn = index == widget.currentIndex;
 
-                  return ListTile(
-                    selected: isOn,
-                    selectedTileColor: const Color.fromARGB(255, 64, 68, 75),
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: Image.asset(
-                        widget.cover[index % widget.cover.length],
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(Icons.music_note, size: 40, color: Colors.blueGrey);
-                        },
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Material(
+                          color: isOn ? const Color.fromARGB(255, 64, 68, 75) : Colors.transparent,
+                          child: ListTile(
+                            selected: isOn,
+                            selectedTileColor: const Color.fromARGB(255, 64, 68, 75),
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: Image.asset(
+                                widget.cover[index % widget.cover.length],
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.music_note, size: 40, color: Colors.blueGrey);
+                                },
+                              ),
+                            ),
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  songTitle,
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  artistName,
+                                  style: const TextStyle(fontSize: 14, color: Colors.blueGrey),
+                                ),
+                              ],
+                            ), 
+                            onTap: () => widget.onSongSelected(index),
+                          ),
+                        ),
                       ),
-                    ),
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          songTitle,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          artistName,
-                          style: const TextStyle(fontSize: 14, color: Colors.blueGrey),
-                        ),
-                      ],
-                    ), 
-                    onTap: () => widget.onSongSelected(index),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),

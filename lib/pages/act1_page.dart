@@ -6,9 +6,12 @@ import 'song_list.dart';
 import 'main_ctrl.dart';
 
 
-
 class ActivityPage1 extends StatefulWidget {
-  const ActivityPage1({super.key});
+  final double minHeight;
+
+  const ActivityPage1({
+    this.minHeight = 600.0,
+    super.key});
 
   @override
   _YourMusicPlayer createState() => _YourMusicPlayer();
@@ -40,18 +43,18 @@ class _YourMusicPlayer extends State<ActivityPage1>{
   ];
 
   List<String> cover = [ 
-    "assets/cover/AEAO.jpg",
-    "assets/cover/HER.jpg",
-    "assets/cover/SWIM.jpg",
-    "assets/cover/Wall to Wall.jpg",
-    "assets/cover/Often.jpg",
-    "assets/cover/Paradise.jpg",
-    "assets/cover/Beat it.jpg",
-    "assets/cover/Paradise.jpg",
-    "assets/cover/Starboy.jpg",
-    "assets/cover/SOMT.jpg",
-    "assets/cover/AIWD.jpg",
-    "assets/cover/TMB.jpg"
+    "assets/cover/AEAO.jpeg",
+    "assets/cover/HER.jpeg",
+    "assets/cover/SWIM.jpeg",
+    "assets/cover/Wall to Wall.jpeg",
+    "assets/cover/Often.jpeg",
+    "assets/cover/Paradise.jpeg",
+    "assets/cover/Beat it.jpeg",
+    "assets/cover/Paradise.jpeg",
+    "assets/cover/Starboy.png",
+    "assets/cover/SOMT.jpeg",
+    "assets/cover/AIWD.jpeg",
+    "assets/cover/TMB.jpeg",
   ];
 
   late FocusNode _focusNode;
@@ -64,7 +67,6 @@ class _YourMusicPlayer extends State<ActivityPage1>{
       audioPlayer: _audioPlayer, 
       songs: songs, 
       currentIndex: _currentIndex, 
-      isShuffle: _isShuffle, 
       initialVolume: _volume);
 
     _focusNode = FocusNode();
@@ -162,12 +164,10 @@ class _YourMusicPlayer extends State<ActivityPage1>{
                        (screenWidth > 940 ? screenHeight * 0.55 : 
                        (screenWidth > 830 ? screenHeight * 0.50 :
                        (screenWidth > 700 ? screenHeight * 0.45  : 
-                       screenHeight * 0.40  ))));
+                       screenHeight * 0.43  ))));
     
-    double listHeight = screenHeight > 960 ? 655 : 
-                        screenHeight > 940 ? screenHeight * 0.50 :
-                        screenHeight > 900 ? screenHeight * 0.65 : 
-                        screenHeight * 0.01;
+    double listHeight = screenHeight > 960 ? 655 :   
+                        screenHeight * 0.65;
     listHeight = listHeight.clamp(250, 675);
     double sliderWidth = isWideScreen ? screenWidth * 0.35  : 300;
 
@@ -226,7 +226,7 @@ class _YourMusicPlayer extends State<ActivityPage1>{
                       constraints: const BoxConstraints(maxWidth: 1900, maxHeight: 150),
                       child: MusicPlayerUIControls(
                         isWideScreen: isWideScreen, 
-                        isShuffle: _isShuffle, 
+                        isShuffle: controller.isShuffle, 
                         toggleShuff: (value) {
                             setState(() {
                               _isShuffle = value;
@@ -273,7 +273,7 @@ class _YourMusicPlayer extends State<ActivityPage1>{
                         const SizedBox(height: 40),
                         MusicPlayerUIControls(
                           isWideScreen: isWideScreen, 
-                          isShuffle: _isShuffle, 
+                          isShuffle: controller.isShuffle, 
                           toggleShuff: (value) {
                             setState(() {
                               _isShuffle = value;

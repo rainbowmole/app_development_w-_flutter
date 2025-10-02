@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'song_list.dart';
 
-
 class MusicPlayerUIControls extends StatefulWidget {
   final bool isWideScreen;
-  final bool isShuffle;
+  final ValueNotifier<bool> isShuffle;
   final ValueNotifier<bool> isPlaying;
   final ValueChanged<bool> toggleShuff;
   final String songTitle;
@@ -156,15 +155,19 @@ class _MusicPlayerUIControlsState extends State<MusicPlayerUIControls> {
             iconSize: 30,
             onPressed: widget.nextSong,),
 
-          IconButton(
-            icon: Icon(
-              widget.isShuffle ? Icons.shuffle_on_outlined : Icons.shuffle,
-              color: widget.isShuffle ? Colors.blueGrey : Colors.blueGrey), 
-            iconSize: 20,
-            onPressed: (){
-              setState(() {
-                widget.toggleShuff(!widget.isShuffle);
-              });
+          ValueListenableBuilder<bool>(
+            valueListenable: widget.isShuffle,
+            builder: (context, isShuffle, _) {
+              return IconButton(
+                icon: Icon(
+                  isShuffle ? Icons.shuffle_on_outlined : Icons.shuffle,
+                  color: Colors.blueGrey,
+                ),
+                iconSize: 20,
+                onPressed: () {
+                  widget.isShuffle.value = !isShuffle;
+                },
+              );
             },
           ), 
         ],

@@ -1,13 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 
 class PlayerController {
   final AudioPlayer audioPlayer;
   final List<String> songs;
   int currentIndex;
-  bool isShuffle;
+  final ValueNotifier<bool> isShuffle = ValueNotifier(false);
   final ValueNotifier<bool> isPlaying = ValueNotifier(false);
   final ValueNotifier<double> volume;
 
@@ -15,7 +14,6 @@ class PlayerController {
     required this.audioPlayer,
     required this.songs,
     required this.currentIndex,
-    required this.isShuffle,
     required double initialVolume,
   }) : volume = ValueNotifier(initialVolume);
 
@@ -32,7 +30,7 @@ class PlayerController {
   }
   
   Future<void> nextSong() async {
-    if (isShuffle) { 
+    if (isShuffle.value) { 
       shuffleSong(); 
     }else{            
       int i = (currentIndex + 1) % songs.length; 
@@ -43,15 +41,15 @@ class PlayerController {
   
   Future<void> prevSong() async{
     int i = (currentIndex - 1 + songs.length) % songs.length; 
-    await playSong(i);  
-    isPlaying.value = false;                                            
+    await playSong(i);
+    isPlaying.value = false;                                             
   }
   
   Future<void> shuffleSong() async{
     int i;             
     do {               
       i = Random().nextInt(songs.length); 
-    } while (i == currentIndex && songs.length > 1); 
+    } while (i == currentIndex && songs.length > 1);
     await playSong(i);     
   }
 
@@ -59,6 +57,4 @@ class PlayerController {
     volume.value = value.clamp(0.0, 1.0);
     audioPlayer.setVolume(volume.value);
   }
-  
-  
 }
