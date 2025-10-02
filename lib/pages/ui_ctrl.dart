@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'song_list.dart';
+import 'lyrics.dart';
 
 class MusicPlayerUIControls extends StatefulWidget {
   final bool isWideScreen;
@@ -199,6 +200,18 @@ class _MusicPlayerUIControlsState extends State<MusicPlayerUIControls> {
       ),  
     );
 
+    Widget lyricWidget = SizedBox(
+      width: 300,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          ShowLyrics(
+            songTitle: widget.songTitle, 
+            artistName: widget.artistName)
+        ],
+      ),
+    );
+
     return widget.isWideScreen
       ? Wrap(
           direction: Axis.horizontal,
@@ -268,5 +281,6 @@ class _MusicPlayerUIControlsState extends State<MusicPlayerUIControls> {
             )
           ],
         );
+      
   } // inside of widget build para di ka malito
 }

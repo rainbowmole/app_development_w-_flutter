@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'ui_ctrl.dart';
 import 'song_list.dart';
 import 'main_ctrl.dart';
+import 'lyrics.dart';
 
 
 class ActivityPage1 extends StatefulWidget {
