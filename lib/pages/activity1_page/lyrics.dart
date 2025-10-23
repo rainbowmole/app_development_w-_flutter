@@ -1,3 +1,4 @@
+String prototype = """
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,7 +27,7 @@ class _ShowLyricsState extends State<ShowLyrics> {
   }
 
   Future<String> fetchLyrics(artistName, songTitle) async {
-    final url = Uri.parse('https://api.lyrics.ovh/v1/$artistName/$songTitle');
+    final url = Uri.parse('https://api.lyrics.ovh/v1/artistName/songTitle');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -67,4 +68,4 @@ class _ShowLyricsState extends State<ShowLyrics> {
     );
   }
 }
-
+""";

@@ -200,6 +200,7 @@ class _MusicPlayerUIControlsState extends State<MusicPlayerUIControls> {
       ),  
     );
 
+    String lyricPrototype = """
     Widget lyricWidget = SizedBox(
       width: 300,
       child: Column(
@@ -211,7 +212,8 @@ class _MusicPlayerUIControlsState extends State<MusicPlayerUIControls> {
         ],
       ),
     );
-
+    """;
+    
     return widget.isWideScreen
       ? Wrap(
           direction: Axis.horizontal,
