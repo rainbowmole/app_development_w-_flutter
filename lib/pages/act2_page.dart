@@ -122,9 +122,9 @@ class _AvoidGameState extends State<ActivityPage2> {
           Align(
             alignment: Alignment(playerX, 0.9),
             child: Image.asset(
-              'dodge/player.png',
-              width: 250,
-              height: 250,
+              'assets/player/player.png',
+              width: 120,
+              height: 120,
               fit: BoxFit.contain,
             ),
           ),
@@ -168,7 +168,7 @@ class _AvoidGameState extends State<ActivityPage2> {
             Center(
               child: ElevatedButton(
                 onPressed: startGame,
-                child: const Text('Start Game'),
+                child: const Text('Press ENTER to Start Game'),
               ),
             ),
         ],
