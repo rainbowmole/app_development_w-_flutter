@@ -153,7 +153,7 @@ class _MusicPlayerUIControlsState extends State<MusicPlayerUIControls> {
           IconButton(
             icon: const Icon(Icons.skip_previous), 
             iconSize: 30,
-            onPressed: widget.prevSong,),
+            onPressed: widget.prevSong),
           
           ValueListenableBuilder<bool>(
             valueListenable: widget.isPlaying,
@@ -271,7 +271,10 @@ class _MusicPlayerUIControlsState extends State<MusicPlayerUIControls> {
                 ],
               ),
             ),
-            volumeSlider
+            Transform.translate(
+              offset: const Offset(-25,0),
+              child: volumeSlider
+              ),
           ],
         )
       : Column(

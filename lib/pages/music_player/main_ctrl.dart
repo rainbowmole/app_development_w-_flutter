@@ -89,7 +89,7 @@ class PlayerController {
     }
   }
 
-  changeVolume(double value) {
+  Future<void> changeVolume(double value) async {
     volume.value = value.clamp(0.0, 1.0);
     audioPlayer.setVolume(volume.value);
   }

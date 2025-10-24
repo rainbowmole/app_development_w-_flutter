@@ -5,7 +5,6 @@ import 'ui_ctrl.dart';
 import 'song_list.dart';
 import 'main_ctrl.dart';
 
-
 class ActivityPage1 extends StatefulWidget {
   final double minHeight;
 
