@@ -12,8 +12,11 @@ class ActivityPage2 extends StatefulWidget {
 
 class _AvoidGameState extends State<ActivityPage2> {
   double playerX = 0;
+  double playerY = -1;
+
   double objectX = Random().nextDouble() * 2 - 1;
   double objectY = -1;
+
   int score = 0;
   bool gameOver = false;
   late Timer gameTimer;
@@ -72,11 +75,19 @@ class _AvoidGameState extends State<ActivityPage2> {
     objectType = Random().nextBool() ? 'avoid' : 'collect';
   }
 
-  void movePlayer(double direction) {
+  void movePlayerLeftRight(double direction) {
     setState(() {
       playerX += direction;
       if (playerX > 1) playerX = 1;
       if (playerX < -1) playerX = -1;
+    });
+  }
+
+  void movePlayerUpDown(double direction) {
+    setState(() {
+      playerY += direction;
+      if (playerY > 1) playerX = 1;
+      if (playerY < -1) playerX = -1;
     });
   }
 
@@ -98,9 +109,13 @@ class _AvoidGameState extends State<ActivityPage2> {
         onKey: (event){
           if (event is RawKeyDownEvent) {
             if (event.logicalKey == LogicalKeyboardKey.keyA) {
-              movePlayer(-0.1);
+              movePlayerLeftRight(-0.1);
             } else if (event.logicalKey == LogicalKeyboardKey.keyD) {
-              movePlayer(0.1);
+              movePlayerLeftRight(0.1);
+            } else if (event.logicalKey == LogicalKeyboardKey.keyW) {
+              movePlayerUpDown(-0.1);
+            } else if (event.logicalKey == LogicalKeyboardKey.keyS) {
+              movePlayerUpDown(0.1);
             } else if (event.logicalKey == LogicalKeyboardKey.enter){
               startGame();
             }
