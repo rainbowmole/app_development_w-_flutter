@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
-import 'ui_ctrl.dart';
-import 'song_list.dart';
-import 'main_ctrl.dart';
+import 'music_player/ui_ctrl.dart';
+import 'music_player/song_list.dart';
+import 'music_player/main_ctrl.dart';
 
 class ActivityPage1 extends StatefulWidget {
   final double minHeight;
