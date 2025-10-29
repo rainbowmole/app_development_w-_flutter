@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/activity1_page/act1_page.dart';
+import 'pages/music_player.dart';
 import 'pages/act2_page.dart';
 import 'pages/act3_page.dart';
 import 'pages/act4_page.dart';
@@ -54,13 +54,8 @@ class HomePage extends StatelessWidget {
 Widget createButton(BuildContext context, IconData icon, String label, String title){
   
   final Map<String, Widget Function()> btn = {
-<<<<<<< HEAD
-    'Button 1': () => const ActivityPage1(),
-    'Button 2': () => const ActivityPage2(),
-=======
-    'Button 1': () => ActivityPage1(),
+    'Button 1': () => MusicPlayer(),
     'Button 2': () => ActivityPage2(),
->>>>>>> 10cd1941ce39992afe3822c94f885ac4e5752bff
     'Button 3': () => ActivityPage3(title: title),
     'Button 4': () => ActivityPage4(title: title),
   };

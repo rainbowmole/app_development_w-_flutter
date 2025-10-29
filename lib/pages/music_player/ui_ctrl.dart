@@ -217,23 +217,6 @@ class _MusicPlayerUIControlsState extends State<MusicPlayerUIControls> {
       ),  
     );
 
-<<<<<<< HEAD:lib/pages/activity1_page/ui_ctrl.dart
-    String lyricPrototype = """
-    Widget lyricWidget = SizedBox(
-      width: 300,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          ShowLyrics(
-            songTitle: widget.songTitle, 
-            artistName: widget.artistName)
-        ],
-      ),
-    );
-    """;
-    
-=======
->>>>>>> cf863d739ef872c4013338f4b5b8f16f8b456e1f:lib/pages/ui_ctrl.dart
     return widget.isWideScreen
       ? Wrap(
           direction: Axis.horizontal,

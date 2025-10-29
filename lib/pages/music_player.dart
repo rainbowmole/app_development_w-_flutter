@@ -5,10 +5,10 @@ import 'music_player/ui_ctrl.dart';
 import 'music_player/song_list.dart';
 import 'music_player/main_ctrl.dart';
 
-class ActivityPage1 extends StatefulWidget {
+class MusicPlayer extends StatefulWidget {
   final double minHeight;
 
-  const ActivityPage1({
+  const MusicPlayer({
     this.minHeight = 600.0,
     super.key});
 
@@ -16,7 +16,7 @@ class ActivityPage1 extends StatefulWidget {
   _YourMusicPlayer createState() => _YourMusicPlayer();
 }
 
-class _YourMusicPlayer extends State<ActivityPage1>{
+class _YourMusicPlayer extends State<MusicPlayer>{
   final AudioPlayer _audioPlayer = AudioPlayer();
   final int _currentIndex = 0; 
   double _volume = 1.0;  
