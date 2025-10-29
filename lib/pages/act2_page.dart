@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+<<<<<<< HEAD
 class ActivityPage2 extends StatelessWidget {
   const ActivityPage2({super.key});
 
@@ -29,6 +30,22 @@ class _AvoidGameState extends State<AvoidGame> {
   double playerX = 0;
   double objectX = Random().nextDouble() * 2 - 1;
   double objectY = -1;
+=======
+class ActivityPage2 extends StatefulWidget {
+  const ActivityPage2({super.key});
+
+  @override
+  _AvoidGameState createState() => _AvoidGameState();
+}
+
+class _AvoidGameState extends State<ActivityPage2> {
+  double playerX = 0;
+  double playerY = -1;
+
+  double objectX = Random().nextDouble() * 2 - 1;
+  double objectY = -1;
+
+>>>>>>> 10cd1941ce39992afe3822c94f885ac4e5752bff
   int score = 0;
   bool gameOver = false;
   late Timer gameTimer;
@@ -87,7 +104,11 @@ class _AvoidGameState extends State<AvoidGame> {
     objectType = Random().nextBool() ? 'avoid' : 'collect';
   }
 
+<<<<<<< HEAD
   void movePlayer(double direction) {
+=======
+  void movePlayerLeftRight(double direction) {
+>>>>>>> 10cd1941ce39992afe3822c94f885ac4e5752bff
     setState(() {
       playerX += direction;
       if (playerX > 1) playerX = 1;
@@ -95,6 +116,17 @@ class _AvoidGameState extends State<AvoidGame> {
     });
   }
 
+<<<<<<< HEAD
+=======
+  void movePlayerUpDown(double direction) {
+    setState(() {
+      playerY += direction;
+      if (playerY > 1) playerX = 1;
+      if (playerY < -1) playerX = -1;
+    });
+  }
+
+>>>>>>> 10cd1941ce39992afe3822c94f885ac4e5752bff
   @override
   void dispose() {
     if (gameTimer.isActive) gameTimer.cancel();
@@ -104,15 +136,33 @@ class _AvoidGameState extends State<AvoidGame> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+<<<<<<< HEAD
+=======
+      appBar: AppBar(
+        title: const Text("Dodging Game Sample")
+      ),
+>>>>>>> 10cd1941ce39992afe3822c94f885ac4e5752bff
       body: RawKeyboardListener(
         focusNode: _focusNode,
         autofocus: true,
         onKey: (event){
           if (event is RawKeyDownEvent) {
             if (event.logicalKey == LogicalKeyboardKey.keyA) {
+<<<<<<< HEAD
               movePlayer(-0.1);
             } else if (event.logicalKey == LogicalKeyboardKey.keyD) {
               movePlayer(0.1);
+=======
+              movePlayerLeftRight(-0.1);
+            } else if (event.logicalKey == LogicalKeyboardKey.keyD) {
+              movePlayerLeftRight(0.1);
+            } else if (event.logicalKey == LogicalKeyboardKey.keyW) {
+              movePlayerUpDown(-0.1);
+            } else if (event.logicalKey == LogicalKeyboardKey.keyS) {
+              movePlayerUpDown(0.1);
+            } else if (event.logicalKey == LogicalKeyboardKey.enter){
+              startGame();
+>>>>>>> 10cd1941ce39992afe3822c94f885ac4e5752bff
             }
           }
         },
@@ -132,9 +182,15 @@ class _AvoidGameState extends State<AvoidGame> {
           Align(
             alignment: Alignment(playerX, 0.9),
             child: Image.asset(
+<<<<<<< HEAD
               'dodge/player.png',
               width: 250,
               height: 250,
+=======
+              'assets/player/player.png',
+              width: 120,
+              height: 120,
+>>>>>>> 10cd1941ce39992afe3822c94f885ac4e5752bff
               fit: BoxFit.contain,
             ),
           ),
@@ -178,7 +234,11 @@ class _AvoidGameState extends State<AvoidGame> {
             Center(
               child: ElevatedButton(
                 onPressed: startGame,
+<<<<<<< HEAD
                 child: const Text('Start Game'),
+=======
+                child: const Text('Press ENTER to Start Game'),
+>>>>>>> 10cd1941ce39992afe3822c94f885ac4e5752bff
               ),
             ),
         ],
@@ -190,6 +250,7 @@ class _AvoidGameState extends State<AvoidGame> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+<<<<<<< HEAD
             IconButton(
               onPressed: () => movePlayer(-0.1),
               icon: const Icon(Icons.arrow_left, size: 40),
@@ -198,6 +259,9 @@ class _AvoidGameState extends State<AvoidGame> {
               onPressed: () => movePlayer(0.1),
               icon: const Icon(Icons.arrow_right, size: 40),
             ),
+=======
+            const Text('PRESS A TO MOVE LEFT, PRESS D TO MOVE RIGHT')
+>>>>>>> 10cd1941ce39992afe3822c94f885ac4e5752bff
           ],
         ),
       ),
