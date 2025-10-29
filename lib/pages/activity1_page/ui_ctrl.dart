@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'song_list.dart';
-import 'lyrics.dart';
 
 class MusicPlayerUIControls extends StatefulWidget {
   final bool isWideScreen;
   final ValueNotifier<bool> isShuffle;
   final ValueNotifier<bool> isPlaying;
   final ValueChanged<bool> toggleShuff;
+  final ValueNotifier<bool> isRepeat;
   final String songTitle;
   final String artistName;
   final double sliderWidth;
@@ -23,6 +23,7 @@ class MusicPlayerUIControls extends StatefulWidget {
   final VoidCallback nextSong;
   final VoidCallback togglePlayPause;
   final VoidCallback shuffleSong;
+  final VoidCallback toggleRepeat;
   final ValueChanged<double> changeVolume; 
 
   const MusicPlayerUIControls({
@@ -31,6 +32,7 @@ class MusicPlayerUIControls extends StatefulWidget {
     required this.isShuffle,
     required this.isPlaying,
     required this.toggleShuff,
+    required this.isRepeat,
     required this.songTitle,
     required this.artistName,
     required this.sliderWidth,
@@ -46,6 +48,7 @@ class MusicPlayerUIControls extends StatefulWidget {
     required this.nextSong,
     required this.togglePlayPause,
     required this.shuffleSong,
+    required this.toggleRepeat,
     required this.changeVolume,
   });
 
@@ -131,7 +134,21 @@ class _MusicPlayerUIControlsState extends State<MusicPlayerUIControls> {
                   ),
                 ),
               ),
-            ), //navigation push daw
+            ) //navigation push daw
+          else
+            ValueListenableBuilder<bool>(
+              valueListenable: widget.isRepeat,
+              builder: (context, isRepeat, _) {
+                return IconButton(
+                  icon: Icon(
+                    isRepeat ? Icons.repeat_on_outlined : Icons.repeat,
+                    color: Colors.blueGrey,
+                  ),
+                  iconSize: 20,
+                  onPressed: widget.toggleRepeat,
+                );
+              },
+            ),
 
           IconButton(
             icon: const Icon(Icons.skip_previous), 
@@ -200,6 +217,7 @@ class _MusicPlayerUIControlsState extends State<MusicPlayerUIControls> {
       ),  
     );
 
+<<<<<<< HEAD:lib/pages/activity1_page/ui_ctrl.dart
     String lyricPrototype = """
     Widget lyricWidget = SizedBox(
       width: 300,
@@ -214,6 +232,8 @@ class _MusicPlayerUIControlsState extends State<MusicPlayerUIControls> {
     );
     """;
     
+=======
+>>>>>>> cf863d739ef872c4013338f4b5b8f16f8b456e1f:lib/pages/ui_ctrl.dart
     return widget.isWideScreen
       ? Wrap(
           direction: Axis.horizontal,
@@ -278,7 +298,7 @@ class _MusicPlayerUIControlsState extends State<MusicPlayerUIControls> {
             musicSlider,
             const SizedBox(height: 10),
             Transform.translate(
-              offset: Offset(0, -19),
+              offset: const Offset(0, -19),
               child: playerControls,
             )
           ],

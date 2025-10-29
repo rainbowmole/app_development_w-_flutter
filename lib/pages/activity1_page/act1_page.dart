@@ -19,10 +19,10 @@ class ActivityPage1 extends StatefulWidget {
 
 class _YourMusicPlayer extends State<ActivityPage1>{
   final AudioPlayer _audioPlayer = AudioPlayer();
-  int _currentIndex = 0; 
+  final int _currentIndex = 0; 
   double _volume = 1.0;  
-  bool _isPlaying = false; 
-  bool _isShuffle = false; 
+  bool _isShuffle = false;
+  final bool _isRepeat = false; 
 
   Duration _duration = Duration.zero; 
   Duration _position = Duration.zero; 
@@ -41,6 +41,8 @@ class _YourMusicPlayer extends State<ActivityPage1>{
     "assets/music/All I Wanna Do - Jay Park.mp3",
     "assets/music/THAT'S MY BABY - PLAYERTWO.mp3"
   ];
+
+  List<String> songHistory = [];
 
   List<String> cover = [ 
     "assets/cover/AEAO.jpeg",
@@ -65,7 +67,10 @@ class _YourMusicPlayer extends State<ActivityPage1>{
     super.initState();
     controller = PlayerController(
       audioPlayer: _audioPlayer, 
-      songs: songs, 
+      songs: songs,
+      songHistory: songHistory,
+      position: _position,
+      duration: _duration, 
       currentIndex: _currentIndex, 
       initialVolume: _volume);
 
@@ -94,6 +99,16 @@ class _YourMusicPlayer extends State<ActivityPage1>{
       if (mounted) {
         if (_isShuffle) {
           controller.shuffleSong();
+        } else {
+          controller.nextSong();
+        }
+      }
+    });
+
+    _audioPlayer.onPlayerComplete.listen((event) {
+      if (mounted) {
+        if (_isRepeat) {
+          controller.repeatSong();
         } else {
           controller.nextSong();
         }
@@ -232,6 +247,7 @@ class _YourMusicPlayer extends State<ActivityPage1>{
                               _isShuffle = value;
                             });
                         },
+                        isRepeat: controller.isRepeat,
                         isPlaying: controller.isPlaying, 
                         songTitle: songTitle, 
                         artistName: artistName, 
@@ -248,6 +264,7 @@ class _YourMusicPlayer extends State<ActivityPage1>{
                         nextSong: controller.nextSong, 
                         togglePlayPause: controller.togglePlayPause, 
                         shuffleSong: controller.shuffleSong,
+                        toggleRepeat: controller.toggleRepeat,
                         changeVolume: controller.changeVolume),
                     ),
                     
@@ -279,6 +296,7 @@ class _YourMusicPlayer extends State<ActivityPage1>{
                               _isShuffle = value;
                             });
                           },
+                          isRepeat: controller.isRepeat,
                           isPlaying: controller.isPlaying, 
                           songTitle: songTitle, 
                           artistName: artistName, 
@@ -295,6 +313,7 @@ class _YourMusicPlayer extends State<ActivityPage1>{
                           nextSong: controller.nextSong, 
                           togglePlayPause: controller.togglePlayPause, 
                           shuffleSong: controller.shuffleSong,
+                          toggleRepeat: controller.toggleRepeat,
                           changeVolume: controller.changeVolume
                         ),
                         const SizedBox(height: 10)
