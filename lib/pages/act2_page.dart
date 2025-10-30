@@ -11,6 +11,8 @@ class ActivityPage2 extends StatefulWidget {
 }
 
 class _AvoidGameState extends State<ActivityPage2> {
+  int health = 3;
+
   double playerX = 0;
   double playerY = -1;
 
@@ -34,6 +36,7 @@ class _AvoidGameState extends State<ActivityPage2> {
 
   void startGame() {
     setState(() {
+      health = 3;
       score = 0;
       gameOver = false;
       objectY = -1;
@@ -54,9 +57,14 @@ class _AvoidGameState extends State<ActivityPage2> {
 
       if (objectY > 0.85 && (objectX - playerX).abs() < 0.2) {
         if (objectType == 'avoid') {
-          gameOver = true;
-          gameTimer.cancel();
-          return;
+          health -= 1;
+          if (health == 0){
+            gameOver = true;
+            gameTimer.cancel();
+            return;
+          } else {
+            resetObject();
+          }
         } else if (objectType == 'collect') {
           score += 5;
           resetObject();
@@ -86,8 +94,8 @@ class _AvoidGameState extends State<ActivityPage2> {
   void movePlayerUpDown(double direction) {
     setState(() {
       playerY += direction;
-      if (playerY > 1) playerX = 1;
-      if (playerY < -1) playerX = -1;
+      if (playerY > 1) playerY = 1;
+      if (playerY < -1) playerY = -1;
     });
   }
 
@@ -135,7 +143,7 @@ class _AvoidGameState extends State<ActivityPage2> {
           ),
 
           Align(
-            alignment: Alignment(playerX, 0.9),
+            alignment: Alignment(playerX, playerY),
             child: Image.asset(
               'assets/player/player.png',
               width: 120,
@@ -149,6 +157,15 @@ class _AvoidGameState extends State<ActivityPage2> {
             left: 20,
             child: Text(
               'Score: $score',
+              style: const TextStyle(fontSize: 30, color: Colors.white),
+            ),
+          ),
+
+          Positioned(
+            top: 90,
+            left: 20,
+            child: Text(
+              'Health: $health',
               style: const TextStyle(fontSize: 30, color: Colors.white),
             ),
           ),
