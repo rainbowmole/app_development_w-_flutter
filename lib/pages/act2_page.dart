@@ -16,6 +16,9 @@ class _AvoidGameState extends State<ActivityPage2> {
   double playerX = 0;
   double playerY = -1;
 
+  String playerDirection = 'front';
+  String playerState = 'idle';
+
   double objectX = Random().nextDouble() * 2 - 1;
   double objectY = -1;
 
@@ -23,6 +26,9 @@ class _AvoidGameState extends State<ActivityPage2> {
   bool gameOver = false;
   late Timer gameTimer;
   String objectType = 'avoid';
+
+  int walkFrame = 1;
+  late Timer animationTimer;
 
   final FocusNode _focusNode = FocusNode();
 
@@ -42,6 +48,8 @@ class _AvoidGameState extends State<ActivityPage2> {
       objectY = -1;
       objectX = Random().nextDouble() * 2 - 1;
       objectType = Random().nextBool() ? 'avoid' : 'collect';
+      playerState = 'idle';
+      
     });
 
     gameTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
@@ -83,11 +91,30 @@ class _AvoidGameState extends State<ActivityPage2> {
     objectType = Random().nextBool() ? 'avoid' : 'collect';
   }
 
+  void startWalkAnimation() {
+    animationTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      setState(() {
+        walkFrame = walkFrame == 1 ? 2 : 1;
+      });
+    });
+  }
+
+  void stopWalkAnimation() {
+    if (animationTimer.isActive) animationTimer.cancel();
+    setState(() {
+      playerState = 'idle';
+      walkFrame = 1;
+    });
+  }
+
   void movePlayerLeftRight(double direction) {
     setState(() {
       playerX += direction;
       if (playerX > 1) playerX = 1;
       if (playerX < -1) playerX = -1;
+
+      playerDirection = direction < 0 ? 'left' : 'right';
+      playerState = 'walk';
     });
   }
 
@@ -96,6 +123,9 @@ class _AvoidGameState extends State<ActivityPage2> {
       playerY += direction;
       if (playerY > 1) playerY = 1;
       if (playerY < -1) playerY = -1;
+
+      playerDirection = direction < 0 ? 'back' : 'front';
+      playerState = 'walk';
     });
   }
 
@@ -145,9 +175,11 @@ class _AvoidGameState extends State<ActivityPage2> {
           Align(
             alignment: Alignment(playerX, playerY),
             child: Image.asset(
-              'assets/player/player.png',
-              width: 120,
-              height: 120,
+              playerState == 'idle' 
+              ? 'assets/player/player_front/player_idle.png' 
+              : 'assets/player/player_$playerDirection.png',
+              width: 250,
+              height: 250,
               fit: BoxFit.contain,
             ),
           ),
