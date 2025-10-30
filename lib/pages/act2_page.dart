@@ -176,7 +176,7 @@ class _AvoidGameState extends State<ActivityPage2> {
             alignment: Alignment(playerX, playerY),
             child: Image.asset(
               playerState == 'idle' 
-              ? 'assets/player/player_front/player_idle.png' 
+              ? 'assets/player/idle.gif' 
               : 'assets/player/player_$playerDirection.png',
               width: 250,
               height: 250,
