@@ -27,9 +27,6 @@ class _AvoidGameState extends State<ActivityPage2> {
   late Timer gameTimer;
   String objectType = 'avoid';
 
-  int walkFrame = 1;
-  late Timer animationTimer;
-
   final FocusNode _focusNode = FocusNode();
 
   @override
@@ -99,25 +96,6 @@ class _AvoidGameState extends State<ActivityPage2> {
     });
   }
 
-  void stopWalkAnimation() {
-    if (animationTimer.isActive) animationTimer.cancel();
-    setState(() {
-      playerState = 'idle';
-      walkFrame = 1;
-    });
-  }
-
-  void movePlayerLeftRight(double direction) {
-    setState(() {
-      playerX += direction;
-      if (playerX > 1) playerX = 1;
-      if (playerX < -1) playerX = -1;
-
-      playerDirection = direction < 0 ? 'left' : 'right';
-      playerState = 'walk';
-    });
-  }
-
   void movePlayerUpDown(double direction) {
     setState(() {
       playerY += direction;
@@ -154,6 +132,8 @@ class _AvoidGameState extends State<ActivityPage2> {
               movePlayerUpDown(-0.1);
             } else if (event.logicalKey == LogicalKeyboardKey.keyS) {
               movePlayerUpDown(0.1);
+            } else if (event.logicalKey == LogicalKeyboardKey.space) {
+              playerState = 'jump';
             } else if (event.logicalKey == LogicalKeyboardKey.enter){
               startGame();
             }
@@ -176,8 +156,10 @@ class _AvoidGameState extends State<ActivityPage2> {
             alignment: Alignment(playerX, playerY),
             child: Image.asset(
               playerState == 'idle' 
-              ? 'assets/player/idle.gif' 
-              : 'assets/player/player_$playerDirection.png',
+              ? 'assets/player/idle.gif'
+              : playerState == 'jump' 
+              ? 'assets/player/jump.gif'
+              :'assets/player/player_$playerDirection.png',
               width: 250,
               height: 250,
               fit: BoxFit.contain,
