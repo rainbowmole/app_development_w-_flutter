@@ -28,8 +28,10 @@ class _AvoidGameState extends State<ActivityPage2> {
   String objectType = 'avoid';
 
   int walkFrame = 1;
-  late Timer animationTimer;
+  late Timer animationTimer =Timer(Duration.zero, () {});
   bool isJumping = false;
+  int runFrame = 1;
+  bool isRunning = false;
 
   final FocusNode _focusNode = FocusNode();
 
@@ -93,6 +95,8 @@ class _AvoidGameState extends State<ActivityPage2> {
   }
 
   void startWalkAnimation() {
+    if (animationTimer.isActive) return;
+
     animationTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
       setState(() {
         walkFrame = walkFrame == 1 ? 2 : 1;
@@ -108,6 +112,16 @@ class _AvoidGameState extends State<ActivityPage2> {
     });
   }
 
+  void startRunAnimation() {
+    if (animationTimer.isActive) return;
+
+    animationTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      setState(() {
+        runFrame = runFrame == 1 ? 2 :1;
+      });
+    });
+  }
+
   void movePlayerLeftRight(double direction) {
     setState(() {
       playerX += direction;
@@ -115,7 +129,15 @@ class _AvoidGameState extends State<ActivityPage2> {
       if (playerX < -1) playerX = -1;
 
       playerDirection = direction < 0 ? 'left' : 'right';
-      playerState = 'walk';
+      playerState = isRunning ? 'run' : 'walk';
+
+      if (isRunning) {
+          startRunAnimation();
+        } else {
+          startWalkAnimation();
+        }
+
+        scheduleIdleReset();
     });
   }
 
@@ -126,7 +148,15 @@ class _AvoidGameState extends State<ActivityPage2> {
       if (playerY < -1) playerY = -1;
 
       playerDirection = direction < 0 ? 'back' : 'front';
-      playerState = 'walk';
+      playerState = isRunning ? 'run' : 'walk';
+
+      if (isRunning) {
+          startRunAnimation();
+        } else {
+          startWalkAnimation();
+        }
+
+        scheduleIdleReset();
     });
   }
 
@@ -149,9 +179,12 @@ class _AvoidGameState extends State<ActivityPage2> {
   void scheduleIdleReset() {
     idleTimer?.cancel();
     idleTimer = Timer(const Duration(milliseconds: 150), () {
-      if (playerState == 'walk') {
+      if (playerState == 'walk' || playerState == 'run') {
+        stopWalkAnimation();
         setState(() {
           playerState = 'idle';
+          walkFrame = 1;
+          runFrame = 1;
         });
       }
     });
@@ -168,29 +201,25 @@ class _AvoidGameState extends State<ActivityPage2> {
         autofocus: true,
         onKey: (event){
           if (event is RawKeyDownEvent) {
+            if (event.logicalKey == LogicalKeyboardKey.shiftLeft) {
+              setState(() {
+                isRunning = true;
+              });
+            }
+
+            double speed = isRunning ? 0.05 : 0.02;
+
             if (event.logicalKey == LogicalKeyboardKey.keyA) {
-              movePlayerLeftRight(-0.1);
+              movePlayerLeftRight(-speed);
             } else if (event.logicalKey == LogicalKeyboardKey.keyD) {
-              movePlayerLeftRight(0.1);
+              movePlayerLeftRight(speed);
             } else if (event.logicalKey == LogicalKeyboardKey.keyW) {
-              movePlayerUpDown(-0.1);
+              movePlayerUpDown(-speed);
             } else if (event.logicalKey == LogicalKeyboardKey.keyS) {
-              movePlayerUpDown(0.1);
+              movePlayerUpDown(speed);
             } else if (event.logicalKey == LogicalKeyboardKey.space) {
               setState(() {
                 playerState = 'jump';
-                isJumping = true;
-              });
-
-              Timer(const Duration(milliseconds: 500), () {
-                setState(() {
-                  playerState = 'idle';
-                  isJumping = false;
-                });
-              });
-            } else if (event.logicalKey == LogicalKeyboardKey.shift){
-              setState(() {
-                playerState = 'run';
                 isJumping = true;
               });
 
@@ -206,6 +235,12 @@ class _AvoidGameState extends State<ActivityPage2> {
           } else if (event is RawKeyUpEvent) {
             if (movementKeys.contains(event.logicalKey)) {
               scheduleIdleReset();
+            }
+
+            if (event.logicalKey == LogicalKeyboardKey.shiftLeft) {
+              setState(() {
+                isRunning = false;
+              });
             }
           }
         },
@@ -228,11 +263,11 @@ class _AvoidGameState extends State<ActivityPage2> {
               playerState == 'idle' 
               ? 'assets/player/${playerDirection}_idle.gif'
               : playerState == 'walk' 
-              ? 'assets/player/${playerDirection}_walk.gif'
+              ? 'assets/player/player_${playerDirection}_walk${walkFrame}.png'
               : playerState == 'jump' 
               ? 'assets/player/${playerDirection}_jump.gif'
               : playerState == 'run' 
-              ? 'assets/player/${playerDirection}_run.gif' 
+              ? 'assets/player/player_${playerDirection}_walk${runFrame}.png' 
               : 'assets/player/player_$playerDirection.png',
               width: 250,
               height: 250,
