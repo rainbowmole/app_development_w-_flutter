@@ -13,8 +13,33 @@ class ActivityPage2 extends StatefulWidget {
 class _AvoidGameState extends State<ActivityPage2> {
   int health = 3;
 
+  double playerWidth = 0.25; 
+  double playerHeight = 0.25;
+
+  double objectWidth = 0.15;
+  double objectHeight = 0.15;
+
+  final double playerHitboxWidth = 250 * 0.4;
+  final double playerHitboxHeight = 250 * 0.4;
+
+  final double objectHitboxWidth = 150 * 0.6;
+  final double objectHitboxHeight = 150 * 0.6;
+
   double playerX = 0;
   double playerY = 0;
+
+  bool checkCollision({
+    required double x1,
+    required double y1,
+    required double w1,
+    required double h1,
+    required double x2,
+    required double y2,
+    required double w2,
+    required double h2,
+  }) {
+    return !(x1 + w1 < x2 || x1 > x2 + w2 || y1 + h1 < y2 || y1 > y2 + h2);
+  }
 
   String playerDirection = 'front'; //front(down), back(up), left, right
   String playerState = 'idle'; // idle, running, jumping, walking, dodge/roll, 
@@ -22,7 +47,7 @@ class _AvoidGameState extends State<ActivityPage2> {
   double objectX = Random().nextDouble() * 2 - 1;
   double objectY = -1;
 
-  int score = 0;
+  int coin = 0;
   bool gameOver = false;
   late Timer gameTimer;
   String objectType = 'avoid';
@@ -46,7 +71,7 @@ class _AvoidGameState extends State<ActivityPage2> {
   void startGame() {
     setState(() {
       health = 3;
-      score = 0;
+      coin = 0;
       gameOver = false;
       objectY = -1;
       objectX = Random().nextDouble() * 2 - 1;
@@ -66,7 +91,26 @@ class _AvoidGameState extends State<ActivityPage2> {
     setState(() {
       objectY += 0.03;
 
-      if (objectY > 0.85 && (objectX - playerX).abs() < 0.2) {
+      double screenWidth = MediaQuery.of(context).size.width;
+      double screenHeight = MediaQuery.of(context).size.height;
+
+      // Convert to alignment units (-1 to 1)
+      double playerWidth = playerHitboxWidth / screenWidth;
+      double playerHeight = playerHitboxHeight / screenHeight;
+
+      double objectWidth = objectHitboxWidth / screenWidth;
+      double objectHeight = objectHitboxHeight / screenHeight;
+
+      if (checkCollision(
+          x1: playerX - playerWidth / 2,
+          y1: playerY - playerHeight / 2,
+          w1: playerWidth,
+          h1: playerHeight,
+          x2: objectX - objectWidth / 2,
+          y2: objectY - objectHeight / 2,
+          w2: objectWidth,
+          h2: objectHeight,
+        )) {
         if (objectType == 'avoid') {
           health -= 1;
           if (health == 0){
@@ -77,7 +121,7 @@ class _AvoidGameState extends State<ActivityPage2> {
             resetObject();
           }
         } else if (objectType == 'collect') {
-          score += 5;
+          coin += 1;
           resetObject();
         }
       }
@@ -193,7 +237,7 @@ class _AvoidGameState extends State<ActivityPage2> {
   final Set<LogicalKeyboardKey> pressedKeys = {};
 
   void handleMovement() {
-    double speed = isRunning ? 0.05 : 0.02;
+    double speed = isRunning ? 0.045 : 0.015;
     double dx = 0;
     double dy = 0;
 
@@ -233,6 +277,13 @@ class _AvoidGameState extends State<ActivityPage2> {
 
   @override
   Widget build(BuildContext context) {
+
+    double playerHitboxWidth = 250 * 0.4;
+    double playerHitboxHeight = 250 * 0.4;
+
+    double objectHitboxWidth = 150 * 0.6;
+    double objectHitboxHeight = 150 * 0.6;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Dodging Game Sample")
@@ -288,42 +339,66 @@ class _AvoidGameState extends State<ActivityPage2> {
             }
           }
         },
+
         child: Stack(
         children: [
           Container(color: Colors.blueGrey[900]),
 
           Align(
             alignment: Alignment(objectX, objectY),
-            child: Image.asset(
-              'dodge/$objectType.png',
-              width: 150,
-              height: 150,
-            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Image.asset(
+                'dodge/$objectType.png',
+                width: 150,
+                height: 150,
+                ),
+                Container(
+                  width: objectHitboxWidth,
+                  height: objectHitboxHeight,
+                  decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+                ),
+              ],
+            ) 
           ),
-
+          
           Align(
             alignment: Alignment(playerX, playerY),
-            child: Image.asset(
-              playerState == 'idle' 
-              ? 'assets/player/${playerDirection}_idle.gif'
-              : playerState == 'walk' 
-              ? 'assets/player/player_${playerDirection}_walk${walkFrame}.png'
-              : playerState == 'jump' 
-              ? 'assets/player/${playerDirection}_jump.gif'
-              : playerState == 'run' 
-              ? 'assets/player/player_${playerDirection}_walk${runFrame}.png' 
-              : 'assets/player/player_$playerDirection.png',
-              width: 250,
-              height: 250,
-              fit: BoxFit.contain,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Image.asset(
+                playerState == 'idle' 
+                  ? 'assets/player/${playerDirection}_idle.gif'
+                : playerState == 'walk' 
+                  ? 'assets/player/player_${playerDirection}_walk${walkFrame}.png'
+                : playerState == 'jump' 
+                  ? 'assets/player/${playerDirection}_jump.gif'
+                : playerState == 'run' 
+                  ? 'assets/player/player_${playerDirection}_run${runFrame}.png' 
+                : 'assets/player/player_$playerDirection.png',
+                width: 250,
+                height: 250,
+                fit: BoxFit.contain,
+                ),
+                Container(
+                  width: playerHitboxWidth, 
+                  height: playerHitboxHeight, 
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.red),
+                  ),
+                ),
+              ]
             ),
           ),
+          
 
           Positioned(
             top: 50,
             left: 20,
             child: Text(
-              'Score: $score',
+              'Coin: $coin',
               style: const TextStyle(fontSize: 30, color: Colors.white),
             ),
           ),
@@ -351,7 +426,7 @@ class _AvoidGameState extends State<ActivityPage2> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text('Score: $score',
+                  Text('Coin: $coin',
                       style:
                           const TextStyle(fontSize: 24, color: Colors.white)),
                   const SizedBox(height: 20),
@@ -363,7 +438,7 @@ class _AvoidGameState extends State<ActivityPage2> {
               ),
             ),
 
-          if (!gameOver && score == 0)
+          if (!gameOver && coin == 0)
             Center(
               child: ElevatedButton(
                 onPressed: startGame,
