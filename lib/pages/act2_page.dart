@@ -226,11 +226,13 @@ class _AvoidGameState extends State<ActivityPage2> {
             alignment: Alignment(playerX, playerY),
             child: Image.asset(
               playerState == 'idle' 
-              ? 'assets/player/idle.gif'
+              ? 'assets/player/${playerDirection}_idle.gif'
+              : playerState == 'walk' 
+              ? 'assets/player/${playerDirection}_walk.gif'
               : playerState == 'jump' 
-              ? 'assets/player/jump.gif'
+              ? 'assets/player/${playerDirection}_jump.gif'
               : playerState == 'run' 
-              ? 'assets/player/${playerDirection}_run.png' 
+              ? 'assets/player/${playerDirection}_run.gif' 
               : 'assets/player/player_$playerDirection.png',
               width: 250,
               height: 250,
