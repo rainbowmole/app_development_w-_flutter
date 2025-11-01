@@ -54,8 +54,8 @@ class HomePage extends StatelessWidget {
 Widget createButton(BuildContext context, IconData icon, String label, String title){
   
   final Map<String, Widget Function()> btn = {
-    'Button 1': () => MusicPlayer(),
-    'Button 2': () => ActivityPage2(),
+    'Button 1': () => const MusicPlayer(),
+    'Button 2': () => const ActivityPage2(),
     'Button 3': () => ActivityPage3(title: title),
     'Button 4': () => ActivityPage4(title: title),
   };

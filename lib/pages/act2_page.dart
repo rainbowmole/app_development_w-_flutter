@@ -16,8 +16,8 @@ class _AvoidGameState extends State<ActivityPage2> {
   double playerX = 0;
   double playerY = -1;
 
-  String playerDirection = 'front';
-  String playerState = 'idle';
+  String playerDirection = 'front'; //front(down), back(up), left, right
+  String playerState = 'idle'; // idle, running, jumping, walking, dodge/roll, 
 
   double objectX = Random().nextDouble() * 2 - 1;
   double objectY = -1;
@@ -26,6 +26,10 @@ class _AvoidGameState extends State<ActivityPage2> {
   bool gameOver = false;
   late Timer gameTimer;
   String objectType = 'avoid';
+
+  int walkFrame = 1;
+  late Timer animationTimer;
+  bool isJumping = false;
 
   final FocusNode _focusNode = FocusNode();
 
@@ -96,6 +100,25 @@ class _AvoidGameState extends State<ActivityPage2> {
     });
   }
 
+  void stopWalkAnimation() {
+    if (animationTimer.isActive) animationTimer.cancel();
+    setState(() {
+      playerState = 'idle';
+      walkFrame = 1;
+    });
+  }
+
+  void movePlayerLeftRight(double direction) {
+    setState(() {
+      playerX += direction;
+      if (playerX > 1) playerX = 1;
+      if (playerX < -1) playerX = -1;
+
+      playerDirection = direction < 0 ? 'left' : 'right';
+      playerState = 'walk';
+    });
+  }
+
   void movePlayerUpDown(double direction) {
     setState(() {
       playerY += direction;
@@ -110,7 +133,28 @@ class _AvoidGameState extends State<ActivityPage2> {
   @override
   void dispose() {
     if (gameTimer.isActive) gameTimer.cancel();
+    idleTimer?.cancel();
     super.dispose();
+  }
+
+  final Set<LogicalKeyboardKey> movementKeys = {
+    LogicalKeyboardKey.keyA,
+    LogicalKeyboardKey.keyD,
+    LogicalKeyboardKey.keyW,
+    LogicalKeyboardKey.keyS,
+  };
+
+  Timer? idleTimer;
+
+  void scheduleIdleReset() {
+    idleTimer?.cancel();
+    idleTimer = Timer(const Duration(milliseconds: 150), () {
+      if (playerState == 'walk') {
+        setState(() {
+          playerState = 'idle';
+        });
+      }
+    });
   }
 
   @override
@@ -133,9 +177,35 @@ class _AvoidGameState extends State<ActivityPage2> {
             } else if (event.logicalKey == LogicalKeyboardKey.keyS) {
               movePlayerUpDown(0.1);
             } else if (event.logicalKey == LogicalKeyboardKey.space) {
-              playerState = 'jump';
+              setState(() {
+                playerState = 'jump';
+                isJumping = true;
+              });
+
+              Timer(const Duration(milliseconds: 500), () {
+                setState(() {
+                  playerState = 'idle';
+                  isJumping = false;
+                });
+              });
+            } else if (event.logicalKey == LogicalKeyboardKey.shift){
+              setState(() {
+                playerState = 'run';
+                isJumping = true;
+              });
+
+              Timer(const Duration(milliseconds: 500), () {
+                setState(() {
+                  playerState = 'idle';
+                  isJumping = false;
+                });
+              });
             } else if (event.logicalKey == LogicalKeyboardKey.enter){
               startGame();
+            }
+          } else if (event is RawKeyUpEvent) {
+            if (movementKeys.contains(event.logicalKey)) {
+              scheduleIdleReset();
             }
           }
         },
@@ -159,7 +229,9 @@ class _AvoidGameState extends State<ActivityPage2> {
               ? 'assets/player/idle.gif'
               : playerState == 'jump' 
               ? 'assets/player/jump.gif'
-              :'assets/player/player_$playerDirection.png',
+              : playerState == 'run' 
+              ? 'assets/player/${playerDirection}_run.png' 
+              : 'assets/player/player_$playerDirection.png',
               width: 250,
               height: 250,
               fit: BoxFit.contain,
@@ -223,10 +295,10 @@ class _AvoidGameState extends State<ActivityPage2> {
 
       bottomNavigationBar: Container(
         color: Colors.black87,
-        child: Row(
+        child: const Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Text('PRESS A TO MOVE LEFT, PRESS D TO MOVE RIGHT')
+            Text('PRESS A TO MOVE LEFT, PRESS D TO MOVE RIGHT')
           ],
         ),
       ),
