@@ -190,6 +190,47 @@ class _AvoidGameState extends State<ActivityPage2> {
     });
   }
 
+  final Set<LogicalKeyboardKey> pressedKeys = {};
+
+  void handleMovement() {
+    double speed = isRunning ? 0.05 : 0.02;
+    double dx = 0;
+    double dy = 0;
+
+    if (pressedKeys.contains(LogicalKeyboardKey.keyA)) dx -= speed;
+    if (pressedKeys.contains(LogicalKeyboardKey.keyD)) dx += speed;
+    if (pressedKeys.contains(LogicalKeyboardKey.keyW)) dy -= speed;
+    if (pressedKeys.contains(LogicalKeyboardKey.keyS)) dy += speed;
+
+    if (dx != 0 || dy != 0) {
+      setState(() {
+        playerX += dx;
+        playerY += dy;
+        playerX = playerX.clamp(-1.0, 1.0);
+        playerY = playerY.clamp(-1.0, 1.0);
+
+        // Determine direction
+        if (dx > 0 && dy < 0) playerDirection = 'right';
+        else if (dx < 0 && dy < 0) playerDirection = 'left';
+        else if (dx > 0 && dy > 0) playerDirection = 'right';
+        else if (dx < 0 && dy > 0) playerDirection = 'left';
+        else if (dx > 0) playerDirection = 'right';
+        else if (dx < 0) playerDirection = 'left';
+        else if (dy < 0) playerDirection = 'back';
+        else if (dy > 0) playerDirection = 'front';
+
+        playerState = isRunning ? 'run' : 'walk';
+        if (isRunning) {
+          startRunAnimation();
+        } else {
+          startWalkAnimation();
+        }
+
+        scheduleIdleReset();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -201,6 +242,8 @@ class _AvoidGameState extends State<ActivityPage2> {
         autofocus: true,
         onKey: (event){
           if (event is RawKeyDownEvent) {
+            pressedKeys.add(event.logicalKey);
+            handleMovement();
             if (event.logicalKey == LogicalKeyboardKey.shiftLeft) {
               setState(() {
                 isRunning = true;
@@ -234,6 +277,7 @@ class _AvoidGameState extends State<ActivityPage2> {
             }
           } else if (event is RawKeyUpEvent) {
             if (movementKeys.contains(event.logicalKey)) {
+              pressedKeys.remove(event.logicalKey);
               scheduleIdleReset();
             }
 
