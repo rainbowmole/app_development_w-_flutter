@@ -211,12 +211,7 @@ class _AvoidGameState extends State<ActivityPage2> {
         },
         child: Stack(
         children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/background/castle_map.png',
-              fit: BoxFit.cover,
-            ),
-          ),
+          Container(color: Colors.blueGrey[900]),
 
           Align(
             alignment: Alignment(objectX, objectY),
