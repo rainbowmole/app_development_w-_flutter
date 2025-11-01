@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dungeon_game/background_grid_tiles.dart';
 
 class ActivityPage2 extends StatefulWidget {
   const ActivityPage2({super.key});
@@ -342,6 +343,8 @@ class _AvoidGameState extends State<ActivityPage2> {
 
         child: Stack(
         children: [
+          const GridBackground(cellSize: 50),
+          
           Container(color: Colors.blueGrey[900]),
 
           Align(
