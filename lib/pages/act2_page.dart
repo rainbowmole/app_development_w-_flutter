@@ -301,12 +301,12 @@ class _AvoidGameState extends State<ActivityPage2> {
               });
             }
 
-            double speed = isRunning ? 0.05 : 0.02;
+            double speed = isRunning ? 0.02 : 0.02;
 
             if (event.logicalKey == LogicalKeyboardKey.keyA) {
-              movePlayerLeftRight(-speed-(-0.01));
+              movePlayerLeftRight(-speed-(-0.015));
             } else if (event.logicalKey == LogicalKeyboardKey.keyD) {
-              movePlayerLeftRight(speed-0.01);
+              movePlayerLeftRight(speed-0.015);
             } else if (event.logicalKey == LogicalKeyboardKey.keyW) {
               movePlayerUpDown(-speed);
             } else if (event.logicalKey == LogicalKeyboardKey.keyS) {
