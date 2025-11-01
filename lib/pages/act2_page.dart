@@ -14,7 +14,7 @@ class _AvoidGameState extends State<ActivityPage2> {
   int health = 3;
 
   double playerX = 0;
-  double playerY = -1;
+  double playerY = 0;
 
   String playerDirection = 'front'; //front(down), back(up), left, right
   String playerState = 'idle'; // idle, running, jumping, walking, dodge/roll, 
@@ -210,9 +210,9 @@ class _AvoidGameState extends State<ActivityPage2> {
             double speed = isRunning ? 0.05 : 0.02;
 
             if (event.logicalKey == LogicalKeyboardKey.keyA) {
-              movePlayerLeftRight(-speed);
+              movePlayerLeftRight(-speed-(-0.01));
             } else if (event.logicalKey == LogicalKeyboardKey.keyD) {
-              movePlayerLeftRight(speed);
+              movePlayerLeftRight(speed-0.01);
             } else if (event.logicalKey == LogicalKeyboardKey.keyW) {
               movePlayerUpDown(-speed);
             } else if (event.logicalKey == LogicalKeyboardKey.keyS) {
