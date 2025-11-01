@@ -26,8 +26,8 @@ class _AvoidGameState extends State<ActivityPage2> {
   final double objectHitboxWidth = 150 * 0.6;
   final double objectHitboxHeight = 150 * 0.6;
 
-  double playerX = 0;
-  double playerY = 0;
+  double worldOffsetX = 0;
+  double worldOffsetY = 0;
 
   bool checkCollision({
     required double x1,
@@ -102,13 +102,16 @@ class _AvoidGameState extends State<ActivityPage2> {
       double objectWidth = objectHitboxWidth / screenWidth;
       double objectHeight = objectHitboxHeight / screenHeight;
 
+      double adjustedObjectX = objectX + worldOffsetX;
+      double adjustedObjectY = objectY + worldOffsetY;
+
       if (checkCollision(
-          x1: playerX - playerWidth / 2,
-          y1: playerY - playerHeight / 2,
+          x1: 0 - playerWidth / 2,
+          y1: 0 - playerHeight / 2,
           w1: playerWidth,
           h1: playerHeight,
-          x2: objectX - objectWidth / 2,
-          y2: objectY - objectHeight / 2,
+          x2: adjustedObjectX - objectWidth / 2,
+          y2: adjustedObjectY - objectHeight / 2,
           w2: objectWidth,
           h2: objectHeight,
         )) {
@@ -169,9 +172,9 @@ class _AvoidGameState extends State<ActivityPage2> {
 
   void movePlayerLeftRight(double direction) {
     setState(() {
-      playerX += direction;
-      if (playerX > 1) playerX = 1;
-      if (playerX < -1) playerX = -1;
+      worldOffsetX += direction;
+
+      worldOffsetX = worldOffsetX.clamp(-1.0, 1.0);
 
       playerDirection = direction < 0 ? 'left' : 'right';
       playerState = isRunning ? 'run' : 'walk';
@@ -188,9 +191,9 @@ class _AvoidGameState extends State<ActivityPage2> {
 
   void movePlayerUpDown(double direction) {
     setState(() {
-      playerY += direction;
-      if (playerY > 1) playerY = 1;
-      if (playerY < -1) playerY = -1;
+      worldOffsetY += direction;
+      
+      worldOffsetY = worldOffsetY.clamp(-1.0, 1.0);
 
       playerDirection = direction < 0 ? 'back' : 'front';
       playerState = isRunning ? 'run' : 'walk';
@@ -237,6 +240,19 @@ class _AvoidGameState extends State<ActivityPage2> {
 
   final Set<LogicalKeyboardKey> pressedKeys = {};
 
+  void clampWorldOffset() {
+    final screenSize = MediaQuery.of(context).size;
+    final double gridWidth = screenSize.width;
+    final double gridHeight = screenSize.height;
+
+    // Assuming grid is centered and spans full screen
+    double maxOffsetX = 1.0; // alignment units
+    double maxOffsetY = 1.0;
+
+    worldOffsetX = worldOffsetX.clamp(-maxOffsetX, maxOffsetX);
+    worldOffsetY = worldOffsetY.clamp(-maxOffsetY, maxOffsetY);
+  }
+
   void handleMovement() {
     double speed = isRunning ? 0.045 : 0.015;
     double dx = 0;
@@ -249,10 +265,10 @@ class _AvoidGameState extends State<ActivityPage2> {
 
     if (dx != 0 || dy != 0) {
       setState(() {
-        playerX += dx;
-        playerY += dy;
-        playerX = playerX.clamp(-1.0, 1.0);
-        playerY = playerY.clamp(-1.0, 1.0);
+        worldOffsetX +- dx;
+        worldOffsetY +- dy;
+
+        clampWorldOffset();
 
         // Determine direction
         if (dx > 0 && dy < 0) playerDirection = 'right';
@@ -343,9 +359,13 @@ class _AvoidGameState extends State<ActivityPage2> {
 
         child: Stack(
         children: [
-          const GridBackground(cellSize: 50),
-          
-          Container(color: Colors.blueGrey[900]),
+          Image.asset(
+            'assets/map/background_expirement2.jpg',
+            fit: BoxFit.none,
+            filterQuality: FilterQuality.none,
+          ),
+
+          const GridBackground(cellSize: 32),
 
           Align(
             alignment: Alignment(objectX, objectY),
@@ -367,7 +387,7 @@ class _AvoidGameState extends State<ActivityPage2> {
           ),
           
           Align(
-            alignment: Alignment(playerX, playerY),
+            alignment: Alignment.center,
             child: Stack(
               alignment: Alignment.center,
               children: [
@@ -381,8 +401,8 @@ class _AvoidGameState extends State<ActivityPage2> {
                 : playerState == 'run' 
                   ? 'assets/player/player_${playerDirection}_run${runFrame}.png' 
                 : 'assets/player/player_$playerDirection.png',
-                width: 250,
-                height: 250,
+                width: 140,
+                height: 140,
                 fit: BoxFit.contain,
                 ),
                 Container(

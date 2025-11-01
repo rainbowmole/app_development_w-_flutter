@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 class GridBackground extends StatelessWidget {
   final double cellSize;
-  const GridBackground({this.cellSize = 50});
+  const GridBackground({this.cellSize = 34});
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +21,8 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.grey[800]!
-      ..strokeWidth = 1;
+      ..color = const Color.fromRGBO(255, 255, 255, 0.2)
+      ..strokeWidth = 2;
 
     for (double x = 0; x <= size.width; x += cellSize) {
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
