@@ -1,34 +1,39 @@
-String frameAnimation = """
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-void startWalkAnimation() {
-    if (animationTimer.isActive) return;
+class FrameAnimation with ChangeNotifier {
+  int walkFrame = 1;
+  int runFrame = 1;
+  Timer? _animationTimer;
 
-    animationTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
-      setState(() {
-        walkFrame = walkFrame == 1 ? 2 : 1;
-      });
-    });
-  }
-
-  void stopWalkAnimation() {
-    if (animationTimer.isActive) animationTimer.cancel();
-    setState(() {
-      playerState = 'idle';
-      walkFrame = 1;
-    });
+  void startWalkAnimation() {
+    _startLoop(() {
+      walkFrame = (walkFrame == 1) ? 2 : 1;
+    }, speedMs: 200);
   }
 
   void startRunAnimation() {
-    if (animationTimer.isActive) return;
+    _startLoop(() {
+      runFrame = (runFrame == 1) ? 2 : 1;
+    }, speedMs: 120); // faster run speed
+  }
 
-    animationTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
-      setState(() {
-        runFrame = runFrame == 1 ? 2 :1;
-      });
+  void stopWalkAnimation() {
+    _animationTimer?.cancel();
+    walkFrame = 1;
+    runFrame = 1;
+    notifyListeners();
+  }
+
+  void _startLoop(VoidCallback onFrameChange, {int speedMs = 200}) {
+    _animationTimer?.cancel();
+    _animationTimer = Timer.periodic(Duration(milliseconds: speedMs), (_) {
+      onFrameChange();
+      notifyListeners();
     });
   }
-""";
+
+  void disposeAnimation() {
+    _animationTimer?.cancel();
+  }
+}
